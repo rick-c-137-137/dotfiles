@@ -1,0 +1,39 @@
+#!/bin/zsh
+
+function setup_chezmoi {
+  GITHUB_USERNAME=x; sh -c "$(curl -fsLS get.chezmoi.io)" -- -b $HOME/.local/bin init --apply $GITHUB_USERNAME;
+}
+function setup_antidote {
+  local antidote_dir="${ZDOTDIR:-$HOME}/.antidote"
+  [[ -d $antidote_dir ]] || git clone --depth=1 https://github.com/mattmc3/antidote.git "$antidote_dir"
+  source "$antidote_dir/antidote.zsh"
+  antidote load
+}
+function setup_others {
+  # zsh plugins
+  PROMPT="%{$fg[yellow]%}[%*] $PROMPT"
+  # macOS tweak
+  defaults write -g com.apple.mouse.scaling 20
+}
+
+function setup_env {
+  function setup_github_job_env {
+    for runner_directory in $HOME/github-runner/*/actions-runner; do
+      des_file=$runner_directory/.env
+      echo "" > $des_file
+      echo "BASH_ENV=$src_dir/env.sh" >> $des_file
+      echo "ACTIONS_RUNNER_HOOK_JOB_STARTED=$src_dir/job_started.sh" >> $des_file
+      echo "ACTIONS_RUNNER_HOOK_JOB_COMPLETED=$src_dir/job_completed.sh" >> $des_file
+      echo "已將更新 $des_file 。"
+    done
+  }
+  src_dir="$(echo $HOME/github-runner/setup/hook)"
+  source $src_dir/env.sh
+  setup_github_job_env
+}
+
+# setup_chezmoi
+chezmoi update --force || setup_chezmoi
+setup_antidote
+setup_env
+setup_others

@@ -33,7 +33,7 @@ function setup_env {
 }
 
 # setup_chezmoi
-chezmoi update --force || setup_chezmoi
+$HOME/.local/bin/chezmoi update --force || setup_chezmoi
 setup_antidote
 setup_env
 setup_others

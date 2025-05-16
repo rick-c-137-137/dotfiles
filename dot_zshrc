@@ -1,7 +1,7 @@
 #!/bin/zsh
 
 function setup_chezmoi {
-  GITHUB_USERNAME=x; sh -c "$(curl -fsLS get.chezmoi.io)" -- -b $HOME/.local/bin init --apply $GITHUB_USERNAME;
+  GITHUB_USERNAME=rick-c-137-137; sh -c "$(curl -fsLS get.chezmoi.io)" -- -b $HOME/.local/bin init --apply $GITHUB_USERNAME;
 }
 function setup_antidote {
   local antidote_dir="${ZDOTDIR:-$HOME}/.antidote"

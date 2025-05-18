@@ -47,9 +47,15 @@ function main {
   setup_others
 }
 
-# flock to avoid concurrent chezmoi installations
-LOCKFILE="/tmp/chezmoi-update.lock"
-exec 9>"$LOCKFILE"
-flock 9
-# 
-main
+function safe {
+  local LOCKDIR="/tmp/chezmoi.lock"
+
+  if mkdir "$LOCKDIR" 2>/dev/null; then
+    trap 'rmdir "$LOCKDIR"' EXIT
+    main
+  else
+    echo "[safe] Another process is running. Skipping."
+  fi
+}
+
+safe

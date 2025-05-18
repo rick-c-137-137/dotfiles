@@ -6,6 +6,7 @@ function setup_chezmoi {
   fi
   $HOME/.local/bin/chezmoi update --force
 }
+
 function setup_antidote {
   # Only proceed if running inside zsh
   if [ -n "$ZSH_VERSION" ]; then
@@ -20,10 +21,12 @@ function setup_antidote {
     echo "Skipping antidote setup: not running in zsh (current shell: $SHELL)"
   fi
 }
+
 function setup_others {
   # macOS tweak
   defaults write -g com.apple.mouse.scaling 20
 }
+
 function setup_env {
   function setup_github_job_env {
     for runner_directory in $HOME/github-runner/*/actions-runner; do
@@ -51,7 +54,7 @@ function safe {
   local LOCKDIR="/tmp/chezmoi.lock"
 
   if mkdir "$LOCKDIR" 2>/dev/null; then
-    trap 'rmdir "$LOCKDIR"' EXIT
+    trap "rmdir '$LOCKDIR'" EXIT
     "$@"
   else
     echo "[safe] Another process is running. Skipping."

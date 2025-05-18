@@ -52,10 +52,10 @@ function safe {
 
   if mkdir "$LOCKDIR" 2>/dev/null; then
     trap 'rmdir "$LOCKDIR"' EXIT
-    main
+    "$@"
   else
     echo "[safe] Another process is running. Skipping."
   fi
 }
 
-safe
+safe main

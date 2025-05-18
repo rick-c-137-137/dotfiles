@@ -1,21 +1,29 @@
-#!/bin/zsh
+#!/bin/bash
 
 function setup_chezmoi {
-  GITHUB_USERNAME=rick-c-137-137; sh -c "$(curl -fsLS get.chezmoi.io)" -- -b $HOME/.local/bin init --apply $GITHUB_USERNAME;
+  if [ ! -f "$HOME/.local/bin/chezmoi" ]; then
+    GITHUB_USERNAME=rick-c-137-137; sh -c "$(curl -fsLS get.chezmoi.io)" -- -b $HOME/.local/bin init --apply $GITHUB_USERNAME;
+  fi
+  $HOME/.local/bin/chezmoi update --force
 }
 function setup_antidote {
-  local antidote_dir="${ZDOTDIR:-$HOME}/.antidote"
-  [[ -d $antidote_dir ]] || git clone --depth=1 https://github.com/mattmc3/antidote.git "$antidote_dir"
-  source "$antidote_dir/antidote.zsh"
-  antidote load
+  # Only proceed if running inside zsh
+  if [ -n "$ZSH_VERSION" ]; then
+    local antidote_dir="${ZDOTDIR:-$HOME}/.antidote"
+    [[ -d $antidote_dir ]] || git clone --depth=1 https://github.com/mattmc3/antidote.git "$antidote_dir"
+    source "$antidote_dir/antidote.zsh"
+    antidote load
+
+    # zsh prompt customization
+    PROMPT="%{$fg[yellow]%}[%*] $PROMPT"
+  else
+    echo "Skipping antidote setup: not running in zsh (current shell: $SHELL)"
+  fi
 }
 function setup_others {
-  # zsh plugins
-  PROMPT="%{$fg[yellow]%}[%*] $PROMPT"
   # macOS tweak
   defaults write -g com.apple.mouse.scaling 20
 }
-
 function setup_env {
   function setup_github_job_env {
     for runner_directory in $HOME/github-runner/*/actions-runner; do
@@ -32,8 +40,16 @@ function setup_env {
   setup_github_job_env
 }
 
-# setup_chezmoi
-$HOME/.local/bin/chezmoi update --force || setup_chezmoi
-setup_antidote
-setup_env
-setup_others
+function main {
+  setup_chezmoi
+  setup_antidote
+  setup_env
+  setup_others
+}
+
+# flock to avoid concurrent chezmoi installations
+LOCKFILE="/tmp/chezmoi-update.lock"
+exec 9>"$LOCKFILE"
+flock 9
+# 
+main

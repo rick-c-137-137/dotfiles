@@ -59,6 +59,7 @@ function safe {
     "$@"
   else
     echo "[safe] Another process is running. Skipping."
+    $HOME/.local/bin/chezmoi update --force || rmdir '$LOCKDIR'
   fi
 }
 

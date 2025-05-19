@@ -2,13 +2,25 @@
 
 function monitorCache {
     function freeDiskSpace {
-        # Android
-        # rm -rf "$HOME/.gradle/caches" || true
-        # iOS
-        rm -rf "$HOME/vendor/DerivedData" || true
-        rm -rf "$HOME/Library/Developer/Xcode/Archives" || true
+        echo "Cleaning..."
         rm -rf "/private/var/tmp/SpeechModelCache/"
+
+        echo "🔧 Cleaning Xcode caches..."
+        rm -rf "$HOME/vendor/DerivedData" || true
+        rm -rf ~/Library/Developer/Xcode/DerivedData/
+        rm -rf ~/Library/Developer/Xcode/Archives/
+        rm -rf ~/Library/Developer/Xcode/Logs/
         xcrun simctl delete all || true
+        # rm -rf ~/Library/Developer/Xcode/iOS\ DeviceSupport/*
+        # rm -rf ~/Library/Developer/CoreSimulator/Devices/*
+        # rm -rf ~/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/*
+
+        echo "📱 Cleaning Android caches..."
+        rm -rf ~/.gradle/caches/
+        rm -rf ~/.android/build-cache/
+        rm -rf ~/.kotlin/daemon/
+        # rm -rf ~/Library/Caches/Google/AndroidStudio*
+
         echo "Did free disk space."
     }
 
@@ -20,8 +32,8 @@ function monitorCache {
         # 計算可用空間（單位：GB）
         available_space_gb=$(echo "scale=2; $available_space_kb / 1000000" | bc)
 
-        # 設置閾值（單位：GB）
-        threshold_gb=40
+        # 設置閾值（單位：GB
+        threshold_gb=30
 
         # 比較可用空間是否小於閾值
         echo "Checking: Available storage $available_space_gb GB. clean if < $threshold_gb GB"

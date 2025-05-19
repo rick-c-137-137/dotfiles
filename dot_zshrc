@@ -4,7 +4,7 @@ function setup_chezmoi {
   if [ ! -f "$HOME/.local/bin/chezmoi" ]; then
     GITHUB_USERNAME=rick-c-137-137; sh -c "$(curl -fsLS get.chezmoi.io)" -- -b $HOME/.local/bin init --apply $GITHUB_USERNAME;
   else 
-    $HOME/.local/bin/chezmoi update
+    $HOME/.local/bin/chezmoi update --force
   fi
 }
 
@@ -63,3 +63,4 @@ function safe {
 }
 
 safe main
+

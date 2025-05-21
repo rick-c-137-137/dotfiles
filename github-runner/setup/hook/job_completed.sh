@@ -44,15 +44,6 @@ function monitorCache {
         fi
     }
 
-    function checkDebugging {
-        echo "Checking: Delete cache if var RUNNER_DEBUG exists: $RUNNER_DEBUG"
-        if [[ $RUNNER_DEBUG == "1" ]]; then
-            freeDiskSpace
-        else
-            echo "No free disk space"
-        fi
-    }
-
     # 定義一個函數來檢查數組是否包含某個元素
     function contains() {
       local element
@@ -70,7 +61,6 @@ function monitorCache {
     # 呼叫函數
     if contains "$RUNNER_NAME" "${work_runner_names[@]}"; then
         checkDiskSpace
-        checkDebugging
     else
         echo "No Check Disk Space"
     fi

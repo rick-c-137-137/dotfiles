@@ -13,10 +13,11 @@ function cleanup_disk_space {
 
     # System
     rm -rf "/private/var/tmp/SpeechModelCache/" || true
+    rm -rf ~/vendor || true
 
     # Xcode
     log "🔧 Cleaning Xcode caches..."
-    rm -rf ~/vendor/DerivedData || true
+    # rm -rf ~/vendor/DerivedData || true
     rm -rf ~/Library/Developer/Xcode/{DerivedData,Archives,Logs} || true
     xcrun simctl delete all || true
 

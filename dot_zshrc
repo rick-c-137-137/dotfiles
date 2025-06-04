@@ -53,15 +53,35 @@ function main {
 
 function safe {
   local LOCKDIR="/tmp/chezmoi.lock"
+  local MAX_RETRIES=3
+  local RETRY_DELAY=1
+  local attempt=1
 
+  while [ $attempt -le $MAX_RETRIES ]; do
+    if mkdir "$LOCKDIR" 2>/dev/null; then
+      trap "rmdir '$LOCKDIR'" EXIT
+      "$@"
+      return
+    else
+      echo "[safe] Attempt $attempt failed: Another process is running. Retrying in $RETRY_DELAY seconds..."
+      sleep $RETRY_DELAY
+      ((attempt++))
+    fi
+  done
+
+  echo "[safe] Max retries reached. Forcing unlock and retrying..."
+  rmdir "$LOCKDIR" 2>/dev/null
+
+  # 最後一次重跑
   if mkdir "$LOCKDIR" 2>/dev/null; then
     trap "rmdir '$LOCKDIR'" EXIT
     "$@"
   else
-    echo "[safe] Another process is running. Skipping."
-    $HOME/.local/bin/chezmoi update --force || rmdir '$LOCKDIR'
+    echo "[safe] Failed to acquire lock even after cleanup. Giving up."
+    return 1
   fi
 }
+
 
 safe main
 

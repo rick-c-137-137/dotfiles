@@ -55,31 +55,21 @@ function safe {
   local LOCKDIR="/tmp/chezmoi.lock"
   local MAX_RETRIES=3
   local RETRY_DELAY=1
-  local attempt=1
+  local count=0
 
-  while [ $attempt -le $MAX_RETRIES ]; do
-    if mkdir "$LOCKDIR" 2>/dev/null; then
-      trap "rmdir '$LOCKDIR'" EXIT
-      "$@"
-      return
-    else
-      echo "[safe] Attempt $attempt failed: Another process is running. Retrying in $RETRY_DELAY seconds..."
-      sleep $RETRY_DELAY
-      ((attempt++))
+  while ! mkdir "$LOCKDIR" 2>/dev/null; do
+    echo "[safe] Lock exists. Retry $((count+1))/$MAX_RETRIES..."
+    ((count++))
+    if [[ $count -ge $MAX_RETRIES ]]; then
+      echo "[safe] Max retries reached. Removing stale lock."
+      rm -rf "$LOCKDIR"
+      break
     fi
+    sleep $((RETRY_DELAY * 60))
   done
 
-  echo "[safe] Max retries reached. Forcing unlock and retrying..."
-  rmdir "$LOCKDIR" 2>/dev/null
-
-  # 最後一次重跑
-  if mkdir "$LOCKDIR" 2>/dev/null; then
-    trap "rmdir '$LOCKDIR'" EXIT
-    "$@"
-  else
-    echo "[safe] Failed to acquire lock even after cleanup. Giving up."
-    return 1
-  fi
+  trap "rm -rf '$LOCKDIR'" EXIT
+  "$@"
 }
 
 

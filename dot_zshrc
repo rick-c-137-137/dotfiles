@@ -27,7 +27,7 @@ function setup_others {
   # macOS tweak
   defaults write -g com.apple.mouse.scaling 20
   # ruby gem
-  [ "$(gem -v)" != "3.2.3" ] && gem update --system 3.2.3
+  [ "$(gem -v)" != "3.2.3" ] && gem update --system 3.2.3 || true
 }
 
 function setup_env {

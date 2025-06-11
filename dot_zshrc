@@ -67,10 +67,10 @@ function safe {
       rm -rf "$LOCKDIR"
       break
     fi
-    sleep $((RETRY_DELAY * 60))
+    sleep $((RETRY_DELAY * 20))
   done
 
-  trap "rm -rf '$LOCKDIR'" EXIT
+  trap "rm -rf '$LOCKDIR'"
   "$@"
 }
 

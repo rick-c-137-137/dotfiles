@@ -1,8 +1,6 @@
 [tools]
-1password = "latest"
-chezmoi = "latest"
 "gem:bundler" = "2.4.22"
-github-cli = "latest"
+github-cli = "2.74.0"
 ruby = "2.6.10"
 
 [settings]

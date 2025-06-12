@@ -26,6 +26,11 @@ function setup_antidote {
 function setup_others {
   # macOS tweak
   defaults write -g com.apple.mouse.scaling 20
+  # mise
+  local mise=~/.local/bin/mise
+  if [ -n "$ZSH_VERSION" ] && [ -x "$mise" ]; then
+    eval "$($mise activate zsh)"
+  fi
 }
 
 function setup_env {

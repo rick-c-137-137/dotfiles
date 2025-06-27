@@ -2,8 +2,6 @@
 github-cli = "2.74.0"
 ruby = { version = "2.6.10", postinstall = 'gem update --system 3.2.3' }
 "gem:bundler" = "2.4.22"
-"gem:digest-crc" = "0.7.0"
-"gem:nkf" = "0.2.0"
 
 [settings]
 experimental = true

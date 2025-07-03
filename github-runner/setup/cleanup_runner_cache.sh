@@ -11,6 +11,9 @@ function log {
 function cleanup_disk_space {
     log "🧹 Cleaning system & development caches..."
 
+    # Mise
+    mise implode --yes --quiet || true
+
     # System
     rm -rf "/private/var/tmp/SpeechModelCache/" || true
     rm -rf ~/vendor/DerivedData || true

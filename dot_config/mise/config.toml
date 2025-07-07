@@ -2,6 +2,7 @@
 github-cli = "2.74.0"
 ruby = { version = "2.6.10", postinstall = 'gem update --system 3.2.3' }
 "gem:bundler" = "2.4.22"
+yq = "4.45.4"
 
 [settings]
 experimental = true

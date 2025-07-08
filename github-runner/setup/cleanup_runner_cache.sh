@@ -12,7 +12,7 @@ function cleanup_disk_space {
     log "🧹 Cleaning system & development caches..."
 
     # Mise
-    rm -rf .local/share/mise/ .local/state/mise/
+    mise implode --yes || true
 
     # System
     rm -rf "/private/var/tmp/SpeechModelCache/" || true

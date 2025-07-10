@@ -64,6 +64,9 @@ function is_monitored_runner {
             return 0
         fi
     done
+    if [[ "$name" == "APP-x86-Auto" ]]; then
+        return 0
+    fi
     return 1
 }
 

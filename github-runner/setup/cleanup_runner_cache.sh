@@ -17,6 +17,8 @@ function cleanup_disk_space {
     # System
     rm -rf "/private/var/tmp/SpeechModelCache/" || true
     rm -rf ~/vendor/DerivedData || true
+    rm -rf ~/.bundle || true
+    rm -rf ~/.gem || true
 
     # Xcode
     log "🔧 Cleaning Xcode caches..."

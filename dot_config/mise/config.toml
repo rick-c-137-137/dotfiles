@@ -1,0 +1,19 @@
+[tools]
+github-cli = "2.74.0"
+ruby = { version = "2.6.10", postinstall = 'gem update --system 3.2.3' }
+"gem:bundler" = "2.4.22"
+
+[settings]
+experimental = true
+
+[hooks]
+postinstall = "mise run"
+
+[env]
+LC_ALL = "en_US.UTF-8"
+LANG = "en_US.UTF-8"
+
+[tasks.default]
+run = """
+echo ""
+"""

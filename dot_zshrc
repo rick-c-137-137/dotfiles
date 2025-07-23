@@ -1,0 +1,84 @@
+#!/bin/bash
+
+function setup_chezmoi {
+  if [ ! -f "$HOME/.local/bin/chezmoi" ]; then
+    GITHUB_USERNAME=rick-c-137-137; sh -c "$(curl -fsLS get.chezmoi.io)" -- -b $HOME/.local/bin init --apply $GITHUB_USERNAME;
+  else 
+    $HOME/.local/bin/chezmoi update --force
+  fi
+}
+
+function setup_antidote {
+  # Only proceed if running inside zsh
+  if [ -n "$ZSH_VERSION" ]; then
+    local antidote_dir="${ZDOTDIR:-$HOME}/.antidote"
+    [[ -d $antidote_dir ]] || git clone --depth=1 https://github.com/mattmc3/antidote.git "$antidote_dir"
+    source "$antidote_dir/antidote.zsh"
+    antidote load
+
+    # zsh prompt customization
+    PROMPT="%{$fg[yellow]%}[%*] $PROMPT"
+  else
+    echo "Skipping antidote setup: not running in zsh (current shell: $SHELL)"
+  fi
+}
+
+function setup_others {
+  # macOS tweak
+  defaults write -g com.apple.mouse.scaling 20
+  # mise
+  local mise=~/.local/bin/mise
+  if [ -n "$ZSH_VERSION" ] && [ -x "$mise" ]; then
+    eval "$($mise activate zsh)"
+  fi
+  # git
+  git config --global push.autoSetupRemote true
+}
+
+function setup_env {
+  function setup_github_job_env {
+    for runner_directory in $HOME/github-runner/*/actions-runner; do
+      des_file=$runner_directory/.env
+      echo "" > $des_file
+      echo "BASH_ENV=$src_dir/env.sh" >> $des_file
+      echo "ACTIONS_RUNNER_HOOK_JOB_STARTED=$src_dir/job_started.sh" >> $des_file
+      echo "ACTIONS_RUNNER_HOOK_JOB_COMPLETED=$src_dir/job_completed.sh" >> $des_file
+      echo "已將更新 $des_file 。"
+    done
+  }
+  src_dir="$(echo $HOME/github-runner/setup/hook)"
+  source $src_dir/env.sh
+  setup_github_job_env
+}
+
+function main {
+  setup_chezmoi
+  setup_antidote
+  setup_env
+  setup_others
+}
+
+function safe {
+  local LOCKDIR="/tmp/chezmoi.lock"
+  local MAX_RETRIES=3
+  local RETRY_DELAY=1
+  local count=0
+
+  while ! mkdir "$LOCKDIR" 2>/dev/null; do
+    echo "[safe] Lock exists. Retry $((count+1))/$MAX_RETRIES..."
+    ((count++))
+    if [[ $count -ge $MAX_RETRIES ]]; then
+      echo "[safe] Max retries reached. Removing stale lock."
+      rm -rf "$LOCKDIR"
+      break
+    fi
+    sleep $((RETRY_DELAY * 20))
+  done
+
+  trap "rm -rf '$LOCKDIR'" EXIT
+  "$@"
+}
+
+
+safe main
+

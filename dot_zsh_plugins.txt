@@ -1,0 +1,23 @@
+# .zsh_plugins.txt - comments begin with "#"
+
+# frameworks like oh-my-zsh are supported
+getantidote/use-omz        # handle OMZ dependencies
+ohmyzsh/ohmyzsh path:lib   # load OMZ's library
+ohmyzsh/ohmyzsh path:plugins/colored-man-pages 
+ohmyzsh/ohmyzsh path:plugins/command-not-found
+ohmyzsh/ohmyzsh path:plugins/git
+ohmyzsh/ohmyzsh path:plugins/gh
+ohmyzsh/ohmyzsh path:plugins/history
+ohmyzsh/ohmyzsh path:plugins/jsontools
+ohmyzsh/ohmyzsh path:plugins/macos
+ohmyzsh/ohmyzsh path:plugins/sublime
+ohmyzsh/ohmyzsh path:plugins/sublime-merge
+ohmyzsh/ohmyzsh path:themes/robbyrussell.zsh-theme
+
+# popular fish-like plugins
+agkozak/zsh-z
+jeffreytse/zsh-vi-mode
+paulirish/git-open
+mattmc3/ez-compinit
+zsh-users/zsh-autosuggestions
+zsh-users/zsh-syntax-highlighting

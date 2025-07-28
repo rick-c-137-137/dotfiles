@@ -8,7 +8,7 @@ MODE="${1:-disk_space}"  # 支援 'disk_space' (預設) 或 'debug_flag'
 function log {
     local message="[$(date +'%Y-%m-%d %H:%M:%S')] $*"
     echo "$message"
-    echo "$message" >> "$HOME/Desktop/log.txt"
+    echo "$message" >> "${HOME}/Desktop/log_${RUNNER_NAME}.txt"
 }
 
 function cleanup_disk_space {

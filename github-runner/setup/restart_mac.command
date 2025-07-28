@@ -7,7 +7,7 @@ function log {
     echo "$message" >> "$HOME/Desktop/log.txt"
 }
 
-log "🔄 Mac restart initiated"
+log "✅ Mac restart initiated"
 
 rm -rf .zsh_sessions
 killall Runner\.Listener

@@ -57,7 +57,7 @@ function check_disk_space {
         log "⚠️  Disk below threshold (${available_gb} GB < ${threshold_gb} GB), running cleanup..."
         cleanup_disk_space
     else
-        log "✅ Disk space sufficient (${available_gb} GB), skipping cleanup."
+        log "☑️ Disk space sufficient (${available_gb} GB), skipping cleanup."
     fi
 }
 
@@ -66,10 +66,10 @@ function check_debug_flag {
         log "🪲 RUNNER_DEBUG is set, cleaning..."
         cleanup_disk_space
     else
-        log "✅ RUNNER_DEBUG not set, skipping cleanup."
+        log "☑️ RUNNER_DEBUG not set, skipping cleanup."
     fi
 }
-
+☑️
 function is_monitored_runner {
     for name in $PINKOI_RUNNER_NAMES; do
         if [[ "$name" == "$RUNNER_NAME" ]]; then

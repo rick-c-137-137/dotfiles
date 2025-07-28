@@ -69,7 +69,7 @@ function check_debug_flag {
         log "☑️ RUNNER_DEBUG not set, skipping cleanup."
     fi
 }
-☑️
+
 function is_monitored_runner {
     for name in $PINKOI_RUNNER_NAMES; do
         if [[ "$name" == "$RUNNER_NAME" ]]; then

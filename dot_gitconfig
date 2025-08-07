@@ -1,0 +1,6 @@
+[push]
+	autoSetupRemote = true
+[pager]
+	branch = false
+[credential]
+	helper = 

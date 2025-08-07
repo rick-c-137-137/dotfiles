@@ -1,16 +1,24 @@
 #!/bin/sh
 
-sh ~/github-runner/setup/cleanup_runner_cache.sh disk_space
-
-cleanup_old_dirs() {
-	TARGET_DIR="$HOME/vendor/DerivedData/viaBranch"
-	# 檢查目錄是否存在
-	if [ -d "$TARGET_DIR" ]; then
-	  find "$TARGET_DIR" -mindepth 1 -maxdepth 1 -type d -mtime +7 -exec rm -rf {} +
-	  echo "✅ Old subdirectories (modified > 7 days ago) have been removed."
-	else
-	  echo "⚠️ Directory $TARGET_DIR does not exist."
-	fi
+function is_monitored_runner {
+    for name in $PINKOI_RUNNER_NAMES; do
+        if [[ "$name" == "$RUNNER_NAME" ]]; then
+            return 0
+        fi
+    done
+    if [[ "Pinkoi-App" == "$RUNNER_NAME" ]]; then
+        return 0
+    fi
+    return 1
 }
 
-cleanup_old_dirs
+function cleanup_runner_cache {
+    if is_monitored_runner; then
+        ~/.local/bin/mise implode --yes || true
+        ~/.local/share/mise/bin/mise implode --yes || true
+    else
+        log "🛑 '$RUNNER_NAME' not in monitored runners. Skipping cleanup."
+    fi
+}
+
+cleanup_runner_cache

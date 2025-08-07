@@ -1,19 +1,33 @@
-[tools]
-github-cli = "2.74.0"
-ruby = { version = "2.6.10", postinstall = 'gem update --system 3.2.3' }
-"gem:bundler" = "2.4.22"
-
-[settings]
-experimental = true
-
-[hooks]
-postinstall = "mise run"
+[tasks.default]
+description = "Run all build tasks"
+run = '''
+'''
 
 [env]
-LC_ALL = "en_US.UTF-8"
-LANG = "en_US.UTF-8"
+# [doc] https://github.com/jdx/mise/blob/86520c50c267fa6844326da70355534e46e043f8/docs/configuration.md?plain=1#L380
+MISE_RAW = 1
 
-[tasks.default]
-run = """
-echo ""
-"""
+[tasks."build:antidote"]
+description = "Clone the cure to slow zsh plugin management"
+hide = true
+sources = ["$HOME/.local/share/antidote"]
+outputs = { auto = true }
+run = '''
+	# Running...
+	antidote_dir="$HOME/.local/share/antidote"
+	rm -rf "$antidote_dir"
+	git clone --quiet --depth=1 https://github.com/mattmc3/antidote.git "$antidote_dir"
+'''
+
+[tasks."update:chezmoi"]
+description = "Update the dotfiles"
+hide = true
+run = '''
+	# Running...
+	if ! mise exec -- chezmoi source-path >/dev/null 2>&1; then
+	  GITHUB_USERNAME=rick-c-137-137; mise exec -- chezmoi init --apply $GITHUB_USERNAME;
+	else
+	  mise exec -- chezmoi update --force
+	fi
+'''
+

@@ -1,61 +1,30 @@
 #!/bin/bash
 
-function setup_chezmoi {
-  if [ ! -f "$HOME/.local/bin/chezmoi" ]; then
-    GITHUB_USERNAME=rick-c-137-137; sh -c "$(curl -fsLS get.chezmoi.io)" -- -b $HOME/.local/bin init --apply $GITHUB_USERNAME;
-  else 
-    $HOME/.local/bin/chezmoi update --force
-  fi
-}
-
-function setup_antidote {
-  # Only proceed if running inside zsh
-  if [ -n "$ZSH_VERSION" ]; then
-    local antidote_dir="${ZDOTDIR:-$HOME}/.antidote"
-    [[ -d $antidote_dir ]] || git clone --depth=1 https://github.com/mattmc3/antidote.git "$antidote_dir"
-    source "$antidote_dir/antidote.zsh"
-    antidote load
-
-    # zsh prompt customization
-    PROMPT="%{$fg[yellow]%}[%*] $PROMPT"
-  else
-    echo "Skipping antidote setup: not running in zsh (current shell: $SHELL)"
-  fi
-}
-
-function setup_others {
-  # macOS tweak
-  defaults write -g com.apple.mouse.scaling 20
-  # mise
-  local mise=~/.local/bin/mise
-  if [ -n "$ZSH_VERSION" ] && [ -x "$mise" ]; then
-    eval "$($mise activate zsh)"
-  fi
-  # git
-  git config --global push.autoSetupRemote true
-}
-
-function setup_env {
-  function setup_github_job_env {
-    for runner_directory in $HOME/github-runner/*/actions-runner; do
-      des_file=$runner_directory/.env
-      echo "" > $des_file
-      echo "BASH_ENV=$src_dir/env.sh" >> $des_file
-      echo "ACTIONS_RUNNER_HOOK_JOB_STARTED=$src_dir/job_started.sh" >> $des_file
-      echo "ACTIONS_RUNNER_HOOK_JOB_COMPLETED=$src_dir/job_completed.sh" >> $des_file
-      echo "已將更新 $des_file 。"
-    done
-  }
-  src_dir="$(echo $HOME/github-runner/setup/hook)"
-  source $src_dir/env.sh
-  setup_github_job_env
-}
-
 function main {
-  setup_chezmoi
-  setup_antidote
-  setup_env
-  setup_others
+
+  # setup macOS tweak
+  defaults write com.apple.desktopservices DSDontWriteNetworkStores -bool TRUE
+  defaults write -g com.apple.mouse.scaling 20
+
+  # setup mise
+  local mise=~/.local/bin/mise
+  if [ ! -f "$mise" ]; then
+    curl https://mise.run | sh
+  fi
+
+  # setup chezmoi
+  mise run update:chezmoi
+
+  # If the variable CI is set and not empty.
+  if [ -z "$CI" ]; then
+    eval "$($mise activate zsh)"
+    # setup antidote, depends: [mise]
+    mise run build:antidote
+    source "$HOME/.local/share/antidote/antidote.zsh" && \
+      antidote load "$HOME/.config/antidote/zsh_plugins.txt" && \
+      PROMPT="%F{yellow}[%*]%f $PROMPT";
+  fi
+
 }
 
 function safe {
@@ -79,6 +48,4 @@ function safe {
   "$@"
 }
 
-
 safe main
-

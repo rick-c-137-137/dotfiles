@@ -2,10 +2,6 @@
 
 function main {
 
-  # setup macOS tweak
-  defaults write com.apple.desktopservices DSDontWriteNetworkStores -bool TRUE
-  defaults write -g com.apple.mouse.scaling 20
-
   # setup mise
   local mise=~/.local/bin/mise
   if [ ! -f "$mise" ]; then
@@ -13,7 +9,7 @@ function main {
   fi
 
   # setup chezmoi
-  mise run update:chezmoi
+  mise run 'update:*'
 
   # If the variable CI is set and not empty.
   if [ -z "$CI" ]; then

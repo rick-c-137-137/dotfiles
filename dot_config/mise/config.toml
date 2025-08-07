@@ -31,6 +31,17 @@ run = '''
 	fi
 '''
 
+[tasks."update:macos-config"]
+description = "make the dotfiles"
+hide = true
+sources = ["$HOME/.gitconfig"]
+outputs = { auto = true }
+run = '''
+	# Running...
+	defaults write com.apple.desktopservices DSDontWriteNetworkStores -bool TRUE
+	defaults write -g com.apple.mouse.scaling 20
+'''
+
 [tasks."build:global-dot-gitconfig"]
 description = "make the dotfiles"
 hide = true
@@ -41,4 +52,5 @@ run = '''
 	git config --global push.autoSetupRemote true
 	git config --global pager.branch false
 	git config --global credential.helper ""
-```
+'''
+

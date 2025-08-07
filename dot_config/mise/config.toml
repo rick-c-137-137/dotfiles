@@ -32,7 +32,7 @@ run = '''
 '''
 
 [tasks."update:macos-config"]
-description = "make the dotfiles"
+description = "Update macOS config"
 hide = true
 sources = ["$HOME/.gitconfig"]
 outputs = { auto = true }
@@ -43,7 +43,7 @@ run = '''
 '''
 
 [tasks."build:global-dot-gitconfig"]
-description = "make the dotfiles"
+description = "Make the dotfiles"
 hide = true
 sources = ["$HOME/.gitconfig"]
 outputs = { auto = true }
@@ -53,4 +53,21 @@ run = '''
 	git config --global pager.branch false
 	git config --global credential.helper ""
 '''
+
+[tasks."restart:macos"]
+description = "Restart macOS"
+hide = true
+run = '''
+	#!/bin/bash
+	rm -rf .zsh_sessions
+	killall Runner\.Listener
+	sleep 3 & exit \
+	& osascript -e 'tell application "Terminal" to set mainID to id of front window' \
+		-e 'tell application "Terminal" to close (every window whose id ≠ mainID) without saving' \
+	& osascript -e 'tell app "System Events" to restart' \
+	& echo "$(date): Restart mac successfully"  >> "$HOME/Desktop/log_restart_mac.txt"
+'''
+
+
+
 

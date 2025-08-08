@@ -33,7 +33,7 @@ env.GITHUB_USERNAME = "rick-c-137-137"
 run = '''
 	# Running...
 	# Lock
-    exec 9>"$HOME/vender/mise_chezmoi_task.lock"
+    exec 9>"$HOME/.mise_chezmoi_task.lock"
     flock 9
     # Main
 	if ! chezmoi source-path >/dev/null 2>&1; then

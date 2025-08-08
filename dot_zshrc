@@ -2,46 +2,21 @@
 
 function main {
 
-  # setup mise
-  local mise=~/.local/bin/mise
-  if [ ! -f "$mise" ]; then
-    curl https://mise.run | sh
-  fi
-
-  # setup chezmoi
-  mise run 'update:*'
-
-  # If the variable CI is set and not empty.
+  # If the variable CI not found.
   if [ -z "$CI" ]; then
+
+    # Install mise If not found.
+    local mise=~/.local/bin/mise
+    if [ ! -f "$mise" ]; then
+      curl https://mise.run | sh
+    fi
+
+    # Activate
     eval "$($mise activate zsh)"
-    # setup antidote, depends: [mise]
-    mise run build:antidote
-    source "$HOME/.local/share/antidote/antidote.zsh" && \
-      antidote load "$HOME/.config/antidote/zsh_plugins.txt" && \
-      PROMPT="%F{yellow}[%*]%f $PROMPT";
   fi
 
+  # To trigger remote chezmoi update
+  ~/.local/bin/mise run 'config:*' || ture
 }
 
-function safe {
-  local LOCKDIR="/tmp/chezmoi.lock"
-  local MAX_RETRIES=3
-  local RETRY_DELAY=1
-  local count=0
-
-  while ! mkdir "$LOCKDIR" 2>/dev/null; do
-    echo "[safe] Lock exists. Retry $((count+1))/$MAX_RETRIES..."
-    ((count++))
-    if [[ $count -ge $MAX_RETRIES ]]; then
-      echo "[safe] Max retries reached. Removing stale lock."
-      rm -rf "$LOCKDIR"
-      break
-    fi
-    sleep $((RETRY_DELAY * 20))
-  done
-
-  trap "rm -rf '$LOCKDIR'" EXIT
-  "$@"
-}
-
-safe main
+main

@@ -7,6 +7,12 @@ run = '''
 # [doc] https://github.com/jdx/mise/blob/86520c50c267fa6844326da70355534e46e043f8/docs/configuration.md?plain=1#L380
 MISE_RAW = 1
 
+[hooks.enter]
+shell = "zsh"
+script = '''
+source "$HOME/.config/antidote/antidoterc"
+'''
+
 [tasks."build:antidote"]
 description = "Clone the cure to slow zsh plugin management"
 hide = true
@@ -19,30 +25,34 @@ run = '''
 	git clone --quiet --depth=1 https://github.com/mattmc3/antidote.git "$antidote_dir"
 '''
 
-[tasks."update:chezmoi"]
+[tasks."config:chezmoi"]
 description = "Update the dotfiles"
 hide = true
+tools.chezmoi = "latest"
+env.GITHUB_USERNAME = "rick-c-137-137"
 run = '''
 	# Running...
-	if ! mise exec -- chezmoi source-path >/dev/null 2>&1; then
-	  GITHUB_USERNAME=rick-c-137-137; mise exec -- chezmoi init --apply $GITHUB_USERNAME;
+	# Lock
+    exec 9>"$HOME/vender/mise_chezmoi_task.lock"
+    flock 9
+    # Main
+	if ! chezmoi source-path >/dev/null 2>&1; then
+	  echo chezmoi init --apply $GITHUB_USERNAME;
 	else
-	  mise exec -- chezmoi update --force
+	  echo chezmoi update --force
 	fi
+    # Unlock
 '''
 
-[tasks."update:macos-config"]
+[tasks."config:macos"]
 description = "Update macOS config"
 hide = true
-sources = ["$HOME/.gitconfig"]
-outputs = { auto = true }
 run = '''
 	# Running...
-	defaults write com.apple.desktopservices DSDontWriteNetworkStores -bool TRUE
 	defaults write -g com.apple.mouse.scaling 20
 '''
 
-[tasks."build:global-dot-gitconfig"]
+[tasks."config:global-dot-gitconfig"]
 description = "Make the dotfiles"
 hide = true
 sources = ["$HOME/.gitconfig"]

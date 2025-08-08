@@ -1,0 +1,7 @@
+#!/bin/zsh
+
+mise run build:antidote
+
+source "$HOME/.local/share/antidote/antidote.zsh" && \
+  antidote load "$HOME/.config/antidote/zsh_plugins.txt" && \
+  PROMPT="%F{yellow}[%*]%f $PROMPT";

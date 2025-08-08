@@ -7,12 +7,6 @@ run = '''
 # [doc] https://github.com/jdx/mise/blob/86520c50c267fa6844326da70355534e46e043f8/docs/configuration.md?plain=1#L380
 MISE_RAW = 1
 
-[hooks.enter]
-shell = "zsh"
-script = '''
-source "$HOME/.config/antidote/antidoterc"
-'''
-
 [tasks."build:antidote"]
 description = "Clone the cure to slow zsh plugin management"
 hide = true
@@ -32,16 +26,17 @@ tools.chezmoi = "latest"
 env.GITHUB_USERNAME = "rick-c-137-137"
 run = '''
 	# Running...
-	# Lock
-    exec 9>"$HOME/.mise_chezmoi_task.lock"
-    flock 9
-    # Main
-	if ! chezmoi source-path >/dev/null 2>&1; then
-	  echo chezmoi init --apply $GITHUB_USERNAME;
-	else
-	  echo chezmoi update --force
+	lock_dir="$HOME/.chezmoi.lock"
+	if mkdir "$lock_dir" 2>/dev/null; then
+  	  trap 'rm -rf "$lock_dir"; echo "Lock released."' EXIT
+
+  	  echo "Running task..."
+	  if ! chezmoi source-path >/dev/null 2>&1; then
+	    echo chezmoi init --apply $GITHUB_USERNAME;
+	  else
+	    echo chezmoi update --force
+	  fi
 	fi
-    # Unlock
 '''
 
 [tasks."config:macos"]

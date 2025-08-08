@@ -1,22 +1,23 @@
 #!/bin/bash
 
 function main {
-
-  # If the variable CI not found.
-  if [ -z "$CI" ]; then
-
-    # Install mise If not found.
-    local mise=~/.local/bin/mise
-    if [ ! -f "$mise" ]; then
-      curl https://mise.run | sh
-    fi
-
-    # Activate
-    eval "$($mise activate zsh)"
+  # Exit 0 if CI.
+  if [ -n "$CI" ]; then
+    exit 0
   fi
 
+  # Install mise If not found.
+  local mise=~/.local/bin/mise
+  if [ ! -f "$mise" ]; then
+    curl https://mise.run | sh
+  fi
+
+  # Activate
+  eval "$($mise activate zsh)"
+  # To load antidote
+  source "$HOME/.config/antidote/antidoterc"
   # To trigger remote chezmoi update
-  ~/.local/bin/mise run 'config:*' || ture
+  mise run 'config:*'
 }
 
 main

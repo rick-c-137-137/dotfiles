@@ -19,8 +19,8 @@ run = '''
 	git clone --quiet --depth=1 https://github.com/mattmc3/antidote.git "$antidote_dir"
 '''
 
-[tasks."config:chezmoi"]
-description = "Update the dotfiles"
+[tasks."config:dotfiles"]
+description = "Update the dotfiles via chezmoi"
 hide = true
 tools.chezmoi = "latest"
 env.GITHUB_USERNAME = "rick-c-137-137"

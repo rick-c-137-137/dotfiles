@@ -32,9 +32,9 @@ run = '''
 
   	  echo "Running task..."
 	  if ! chezmoi source-path >/dev/null 2>&1; then
-	    echo chezmoi init --apply $GITHUB_USERNAME;
+	    chezmoi init --apply $GITHUB_USERNAME;
 	  else
-	    echo chezmoi update --force
+	    chezmoi update --force
 	  fi
 	fi
 '''

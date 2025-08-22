@@ -23,6 +23,7 @@ function runCrontab {
 function main {
 	runCrontab
 	~/.local/bin/mise run --cd="$HOME/.config/mise" config:dotfiles
+	~/.local/bin/mise self-update --yes
 	~/.local/bin/mise run --cd="$HOME/.config/mise" restart:macos
 }
 
